@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}沖煮參數甜甜圈圖{% endblock %}
+
+{% block main %}
+
+<div class="container" style="margin: 4em auto">
+
+<div class="row">
+  <div class="col">
+    <h1>甜甜圈圖</h1>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+  <h2>coffeeName</h2>
+  <div id="coffeeNameDonut"></div>
+  </div>
+  <div class="col">
+  <h2>結果</h2>
+  <div id="outcomeDonut"></div>
+  </div>
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+const table = {{ table|tojson }};
+const uniqueAlpacaName = {{ uniques[0]|tojson }};
+const uniqueoutcome = {{ uniques[1]|tojson }};
+const uniqueDate = {{ uniques[2]|tojson }};
+
+
+let coffeeNameDaily = []
+uniqueCoffeeName.forEach(x => coffeeNameDaily.push([x].concat(uniqueDate.map(x => 0))))
+let coffeeNameIndex = coffeeNameDaily.map(x => x[0])
+
+let outcomeDaily = []
+uniqueoutcome.forEach(x => outcomeDaily.push([x].concat(uniqueDate.map(x => 0))))
+let outcomeIndex = outcomeDaily.map(x => x[0])
+
+table.forEach(function (x) {
+  tempDate = uniqueDate.indexOf(x[7])+1;
+  tempName = coffeeNameIndex.indexOf(x[1]);
+  tempoutcome = outcomeIndex.indexOf(x[6]);
+  coffeeNameDaily[tempName][tempDate] += x[3];
+  outcomeDaily[tempoutcome][tempDate] += x[3];
+})
+
+var alpacaNameChart = c3.generate({
+    bindto: '#coffeeNameDonut',
+    data: {
+      columns: coffeeNameDaily,
+      type: 'donut'
+    },
+  donut: {
+  title: 'coffeeNameDonut'
+}
+});
+
+var trainingChart = c3.generate({
+    bindto: '#outcomeDonut',
+    data: {
+      columns: outcomeDaily,
+      type: 'donut'
+    },
+  donut: {
+  title: 'outcomeDonut'
+}
+});
+
+</script>
+{% endblock %}
